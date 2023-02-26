@@ -17,6 +17,13 @@ package main
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
+	"net"
+	"os"
+	"strings"
+	"sync"
+	"time"
+
 	pb "github.com/opentelemetry/opentelemetry-demo/src/productcatalogservice/genproto/hipstershop"
 	"github.com/sirupsen/logrus"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
@@ -24,12 +31,6 @@ import (
 	"go.opentelemetry.io/otel/metric/global"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
-	"io/ioutil"
-	"net"
-	"os"
-	"strings"
-	"sync"
-	"time"
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -196,6 +197,15 @@ func (p *productCatalog) ListProducts(ctx context.Context, req *pb.Empty) (*pb.L
 	span.SetAttributes(
 		attribute.Int("app.products.count", len(catalog)),
 	)
+
+	// GetProductList will fail when feature flag is enabled
+	if p.checkProductListFailure(ctx) {
+		msg := fmt.Sprintf("Error: ListProductCatalogService Fail Feature Flag Enabled")
+		span.SetStatus(otelcodes.Error, msg)
+		span.AddEvent(msg)
+		//return nil, status.Errorf(codes.Internal, msg)
+	}
+
 	return &pb.ListProductsResponse{Products: catalog}, nil
 }
 
@@ -250,6 +260,29 @@ func (p *productCatalog) SearchProducts(ctx context.Context, req *pb.SearchProdu
 		attribute.Int("app.products_search.count", len(result)),
 	)
 	return &pb.SearchProductsResponse{Results: result}, nil
+}
+
+func (p *productCatalog) checkProductListFailure(ctx context.Context) bool {
+
+	conn, err := createClient(ctx, p.featureFlagSvcAddr)
+	if err != nil {
+		span := trace.SpanFromContext(ctx)
+		span.AddEvent("error", trace.WithAttributes(attribute.String("message", "Feature Flag Connection Failed")))
+		return false
+	}
+	defer conn.Close()
+
+	flagName := "listProductCatalogFailure"
+	ffResponse, err := pb.NewFeatureFlagServiceClient(conn).GetFlag(ctx, &pb.GetFlagRequest{
+		Name: flagName,
+	})
+	if err != nil {
+		span := trace.SpanFromContext(ctx)
+		span.AddEvent("error", trace.WithAttributes(attribute.String("message", fmt.Sprintf("GetFlag Failed: %s", flagName))))
+		return false
+	}
+
+	return ffResponse.GetFlag().Enabled
 }
 
 func (p *productCatalog) checkProductFailure(ctx context.Context, id string) bool {
