@@ -203,11 +203,11 @@ func (p *productCatalog) ListProducts(ctx context.Context, req *pb.Empty) (*pb.L
 		span := trace.SpanFromContext(ctx)
 
 		span.SetAttributes(
-			attribute.Int("db.statement", "select 1 from auth where auth_token = ?"),
+			attribute.String("db.statement", "select 1 from auth where auth_token = ?"),
 		)
 
 		span.SetAttributes(
-			attribute.Int("db.instance", "ffs"),
+			attribute.String("db.instance", "ffs"),
 		)
 
 		msg := fmt.Sprintf("Error: ListProductCatalogService Fail Feature Flag Enabled")
