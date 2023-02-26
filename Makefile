@@ -63,6 +63,10 @@ build-and-push-dockerhub:
 	docker compose --env-file .dockerhub.env -f docker-compose.yml build
 	docker compose --env-file .dockerhub.env -f docker-compose.yml push
 
+.PHONY: build-dockerhub
+build-dockerhub:
+	docker compose --env-file .dockerhub.env -f docker-compose.yml build
+
 .PHONY: build-and-push-ghcr
 build-and-push-ghcr:
 	docker compose --env-file .ghcr.env -f docker-compose.yml build
