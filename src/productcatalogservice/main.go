@@ -212,16 +212,19 @@ func (p *productCatalog) ListProducts(ctx context.Context, req *pb.Empty) (*pb.L
 
 		if random == 3 {
 
-			_, childSpan := tracer.Start(ctx, "child")
-			defer childSpan.End()
+			for i := 1; i < 50; i++ {
 
-			childSpan.SetAttributes(
-				attribute.String("db.statement", "select 1 from list where list_token = ?"),
-			)
+				_, childSpan := tracer.Start(ctx, "Get data from database")
+				defer childSpan.End()
 
-			childSpan.SetAttributes(
-				attribute.String("db.instance", "ffs"),
-			)
+				childSpan.SetAttributes(
+					attribute.String("db.statement", "select 1 from list where list_token = ?"),
+				)
+
+				childSpan.SetAttributes(
+					attribute.String("db.instance", "ffs"),
+				)
+			}
 
 			msg := fmt.Sprintf("Error: ListProductCatalogService Fail Feature Flag Enabled")
 			span.SetStatus(otelcodes.Error, msg)
