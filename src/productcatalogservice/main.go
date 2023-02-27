@@ -201,7 +201,7 @@ func (p *productCatalog) ListProducts(ctx context.Context, req *pb.Empty) (*pb.L
 	// GetProductList will fail when feature flag is enabled
 	if p.checkProductListFailure(ctx) {
 
-		ctx, childSpan := trace.Start(ctx, "child")
+		ctx, childSpan := otel.Tracer.Start(ctx, "child")
 		defer childSpan.End()
 
 		childSpan.SetAttributes(
