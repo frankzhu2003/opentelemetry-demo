@@ -200,20 +200,22 @@ func (p *productCatalog) ListProducts(ctx context.Context, req *pb.Empty) (*pb.L
 
 	// GetProductList will fail when feature flag is enabled
 	if p.checkProductListFailure(ctx) {
-		aspan := trace.SpanFromContext(ctx)
 
-		aspan.SetAttributes(
+		ctx, childSpan := trace.Start(ctx, "child")
+		defer childSpan.End()
+
+		childSpan.SetAttributes(
 			attribute.String("db.statement", "select 1 from auth where auth_token = ?"),
 		)
 
-		aspan.SetAttributes(
+		childSpan.SetAttributes(
 			attribute.String("db.instance", "ffs"),
 		)
 
-		msg := fmt.Sprintf("Error: ListProductCatalogService Fail Feature Flag Enabled")
-		aspan.SetStatus(otelcodes.Error, msg)
-		aspan.AddEvent(msg)
-		return nil, status.Errorf(codes.Internal, msg)
+		// msg := fmt.Sprintf("Error: ListProductCatalogService Fail Feature Flag Enabled")
+		// span.SetStatus(otelcodes.Error, msg)
+		// span.AddEvent(msg)
+		// return nil, status.Errorf(codes.Internal, msg)
 	}
 
 	return &pb.ListProductsResponse{Products: catalog}, nil
