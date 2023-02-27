@@ -212,9 +212,11 @@ func (p *productCatalog) ListProducts(ctx context.Context, req *pb.Empty) (*pb.L
 
 		if random == 3 {
 
-			for i := 1; i < 50; i++ {
+			arandom := rand.Intn(50) + 50
 
-				_, childSpan := tracer.Start(ctx, "Get data from database")
+			for i := 1; i < arandom; i++ {
+
+				_, childSpan := tracer.Start(ctx, "get_data_from_database")
 				defer childSpan.End()
 
 				childSpan.SetAttributes(
