@@ -51,6 +51,8 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+var tracer trace.Tracer
+
 var (
 	log               *logrus.Logger
 	catalog           []*pb.Product
@@ -114,6 +116,9 @@ func initMeterProvider() *sdkmetric.MeterProvider {
 
 func main() {
 	tp := initTracerProvider()
+
+	tracer = tp.Tracer("ListProductCatalogService")
+
 	defer func() {
 		if err := tp.Shutdown(context.Background()); err != nil {
 			log.Fatalf("Tracer Provider Shutdown: %v", err)
@@ -201,7 +206,7 @@ func (p *productCatalog) ListProducts(ctx context.Context, req *pb.Empty) (*pb.L
 	// GetProductList will fail when feature flag is enabled
 	if p.checkProductListFailure(ctx) {
 
-		ctx, childSpan := otel.Tracer.Start(ctx, "child")
+		ctx, childSpan := tracer.Start(ctx, "child")
 		defer childSpan.End()
 
 		childSpan.SetAttributes(
