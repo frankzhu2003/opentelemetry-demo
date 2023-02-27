@@ -213,7 +213,7 @@ func (p *productCatalog) ListProducts(ctx context.Context, req *pb.Empty) (*pb.L
 		msg := fmt.Sprintf("Error: ListProductCatalogService Fail Feature Flag Enabled")
 		aspan.SetStatus(otelcodes.Error, msg)
 		aspan.AddEvent(msg)
-		//return nil, status.Errorf(codes.Internal, msg)
+		return nil, status.Errorf(codes.Internal, msg)
 	}
 
 	return &pb.ListProductsResponse{Products: catalog}, nil
