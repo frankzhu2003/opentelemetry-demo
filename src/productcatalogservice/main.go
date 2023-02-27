@@ -210,7 +210,7 @@ func (p *productCatalog) ListProducts(ctx context.Context, req *pb.Empty) (*pb.L
 		defer childSpan.End()
 
 		childSpan.SetAttributes(
-			attribute.String("db.statement", "select 1 from auth where auth_token = ?"),
+			attribute.String("db.statement", "select 1 from list where list_token = ?"),
 		)
 
 		childSpan.SetAttributes(
