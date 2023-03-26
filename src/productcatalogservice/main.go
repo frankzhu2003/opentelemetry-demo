@@ -233,7 +233,7 @@ func getInfoFromDB(ctx context.Context) {
 	_, childSpan := tracer.Start(ctx, "get_data_from_database")
 	defer childSpan.End()
 
-	time.Sleep(time.Duration(rand.Intn(20)) * time.Millisecond)
+	time.Sleep(time.Duration(rand.Intn(400)) * time.Millisecond)
 
 	childSpan.SetAttributes(
 		attribute.String("db.statement", "select 1 from list where list_token = ?"),
