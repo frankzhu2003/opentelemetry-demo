@@ -216,7 +216,9 @@ func (p *productCatalog) ListProducts(ctx context.Context, req *pb.Empty) (*pb.L
 
 			for i := 1; i < arandom; i++ {
 
-				go getInfoFromDB(ctx)
+				getInfoFromDB(ctx)
+
+				time.Sleep(time.Duration(rand.Intn(20)) * time.Millisecond)
 			}
 
 			msg := fmt.Sprintf("Error: ListProductCatalogService Fail Feature Flag Enabled")
@@ -232,8 +234,6 @@ func (p *productCatalog) ListProducts(ctx context.Context, req *pb.Empty) (*pb.L
 func getInfoFromDB(ctx context.Context) {
 	_, childSpan := tracer.Start(ctx, "get_data_from_database")
 	defer childSpan.End()
-
-	time.Sleep(time.Duration(rand.Intn(400)) * time.Millisecond)
 
 	childSpan.SetAttributes(
 		attribute.String("db.statement", "select 1 from list where list_token = ?"),
