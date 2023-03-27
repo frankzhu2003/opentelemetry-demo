@@ -243,7 +243,7 @@ func getInfoFromDB(ctx context.Context) {
 		attribute.String("db.instance", "ffs"),
 	)
 
-	childSpan.LogKV(
+	childSpan.span.LogKV(
 		"event", "database error",
 		"type", "no result",
 		"details", "timeout",
