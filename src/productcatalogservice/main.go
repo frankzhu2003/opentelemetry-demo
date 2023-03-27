@@ -248,14 +248,6 @@ func getInfoFromDB(ctx context.Context) {
 		attribute.String("db.error.message", "Token is invalid"),
 	)
 
-	// span := childSpan.SpanFromContext(ctx)
-
-	// span.LogKV(
-	// 	"event", "database error",
-	// 	"type", "no result",
-	// 	"details", "timeout",
-	// )
-
 }
 
 func (p *productCatalog) GetProduct(ctx context.Context, req *pb.GetProductRequest) (*pb.Product, error) {
