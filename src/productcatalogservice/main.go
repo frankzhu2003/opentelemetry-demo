@@ -244,8 +244,8 @@ func getInfoFromDB(ctx context.Context) {
 		attribute.String("db.instance", "ffs"),
 	)
 
-	msg := fmt.Sprintf("@@ this is the span log from DB")
-	childSpan.SetStatus(otelcodes.Ok, msg)
+	msg := fmt.Sprintf("this is the span log from DB")
+	childSpan.SetStatus(otelcodes.Error, msg)
 	childSpan.AddEvent(msg)
 
 	// span := childSpan.SpanFromContext(ctx)
