@@ -223,11 +223,7 @@ func (p *productCatalog) ListProducts(ctx context.Context, req *pb.Empty) (*pb.L
 			span.SetStatus(otelcodes.Error, msg)
 			span.AddEvent(msg)
 
-			span.LogKV(
-				"event", "database error",
-				"type", "no result",
-				"details", "timeout",
-			)
+			span.AddEvent("this is the span log")
 			return nil, status.Errorf(codes.Internal, msg)
 		}
 	}
@@ -248,6 +244,8 @@ func getInfoFromDB(ctx context.Context) {
 	childSpan.SetAttributes(
 		attribute.String("db.instance", "ffs"),
 	)
+
+	childSpan.AddEvent("this is the span log from DB")
 
 	// span := childSpan.SpanFromContext(ctx)
 
