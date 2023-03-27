@@ -222,6 +222,12 @@ func (p *productCatalog) ListProducts(ctx context.Context, req *pb.Empty) (*pb.L
 			msg := fmt.Sprintf("Error: ListProductCatalogService Fail Feature Flag Enabled")
 			span.SetStatus(otelcodes.Error, msg)
 			span.AddEvent(msg)
+
+			span.LogKV(
+				"event", "database error",
+				"type", "no result",
+				"details", "timeout",
+			)
 			return nil, status.Errorf(codes.Internal, msg)
 		}
 	}
@@ -243,13 +249,13 @@ func getInfoFromDB(ctx context.Context) {
 		attribute.String("db.instance", "ffs"),
 	)
 
-	span := childSpan.SpanFromContext(ctx)
+	// span := childSpan.SpanFromContext(ctx)
 
-	span.LogKV(
-		"event", "database error",
-		"type", "no result",
-		"details", "timeout",
-	)
+	// span.LogKV(
+	// 	"event", "database error",
+	// 	"type", "no result",
+	// 	"details", "timeout",
+	// )
 
 }
 
