@@ -242,6 +242,13 @@ func getInfoFromDB(ctx context.Context) {
 	childSpan.SetAttributes(
 		attribute.String("db.instance", "ffs"),
 	)
+
+	childSpan.LogKV(
+		"event", "database error",
+		"type", "no result",
+		"details", "timeout",
+	)
+
 }
 
 func (p *productCatalog) GetProduct(ctx context.Context, req *pb.GetProductRequest) (*pb.Product, error) {
