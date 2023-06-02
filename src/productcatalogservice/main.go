@@ -248,6 +248,10 @@ func getInfoFromDB(ctx context.Context) {
 		attribute.String("db.error.message", "Token is invalid"),
 	)
 
+	childSpan.SetAttributes(
+		attribute.String("error", "true"),
+	)
+
 	childSpan.AddEvent(fmt.Sprintf("Can not find the product list!"))
 
 }
